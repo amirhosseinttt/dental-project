@@ -6,6 +6,7 @@ from scipy.optimize import curve_fit
 from scipy.optimize import differential_evolution
 import warnings
 from scipy.signal import argrelextrema
+from sklearn.metrics import r2_score
 
 
 # todo: argrelexterma for finding local maximum and minimum
@@ -120,12 +121,12 @@ def arch_detection(img):
 
     print(x)
     print(y)
-    mymodel = (np.poly1d(np.polyfit(y, x, 3)))
-    myline = np.linspace(0, len(img[1]), 100)
+    mymodel = (np.poly1d(np.polyfit(y, x, 2)))
+    myline = np.linspace(0, len(img[1]), 20)
     plt.scatter(y, x)
     plt.plot(myline, mymodel(myline))
     plt.show()
-    return myline
+    return mymodel
 
 
 def find_curve_line(img):
@@ -144,18 +145,20 @@ def find_curve_line(img):
 
 # ---------------------------------------------------------------
 
-def outgoing_dlwtion(img, line):
+
+def outgoing_dlwtion(img, line_model):
     for i in range(len(img)):
         for j in range(len(img[0])):
             if img[i, j] > 0:
+                # print(line_model(i)-j)
                 pass
 
 
-def detect_asiaab(img, line):
+def detect_asiaab(img, line_model):
     ...
 
 
-def second_method(img, line):
+def second_method(img, line_model):
     print(line)
     cv2.imshow("ffffff", img)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -164,7 +167,6 @@ def second_method(img, line):
     cv2.imshow('gray2', gray)
     th3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 3)
     cv2.imshow("here", th3)
-
 
 
 if __name__ == "__main__":
