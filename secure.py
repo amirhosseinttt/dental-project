@@ -136,12 +136,10 @@ def find_curve_line(img):
 
 
 def second_method(img, line):
-    cv2.imshow("ffffff", img)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imshow("gray",gray)
+    cv2.imshow("ffffff",img)
+    gray =  cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     th3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 3)
-    cv2.imshow("here", th3)
-
+    cv2.imshow("here",th3)
 
 if __name__ == "__main__":
     img_path = 'data/image5.jpg'
@@ -152,3 +150,4 @@ if __name__ == "__main__":
     second_method(img, line)
     cv2.imshow("ttt", canny(img, 0, 200))
     cv2.waitKey(0)
+

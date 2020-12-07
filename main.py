@@ -5,7 +5,12 @@ from sklearn.preprocessing import PolynomialFeatures
 from scipy.optimize import curve_fit
 from scipy.optimize import differential_evolution
 import warnings
+from scipy.signal import argrelextrema
 
+
+# todo: argrelexterma for finding local maximum and minimum
+# todo: outgoing deletion from the line
+# todo: first detect asiaab then niiiiish
 
 def circle_around(img):
     circles = cv2.HoughCircles(canny, cv2.HOUGH_GRADIENT, 1, 40, param1=10, param2=16, minRadius=20, maxRadius=80)
@@ -49,8 +54,8 @@ def mask(img):
     return img
 
 
-def gray_thresh(img):
-    th3 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 101, 60)
+def gray_thresh(img, arg1=101, arg2=60):
+    th3 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, arg1, arg2)
     return th3
 
 
@@ -112,6 +117,7 @@ def arch_detection(img):
                 y.append(j)
             j += 1
         i += 1
+
     print(x)
     print(y)
     mymodel = (np.poly1d(np.polyfit(y, x, 3)))
@@ -130,16 +136,36 @@ def find_curve_line(img):
     gray = gray_thresh(gray)
     line = arch_detection(gray)
     print(line)
-    cv2.imshow('gray', gray)
+    cv2.imshow('gray1', gray)
     gray = np.float32(gray)
     cv2.imshow('canny', canny(img))
+    return line
+
+
+# ---------------------------------------------------------------
+
+def outgoing_dlwtion(img, line):
+    for i in range(len(img)):
+        for j in range(len(img[0])):
+            if img[i, j] > 0:
+                pass
+
+
+def detect_asiaab(img, line):
+    ...
 
 
 def second_method(img, line):
-    cv2.imshow("ffffff",img)
-    gray =  cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    print(line)
+    cv2.imshow("ffffff", img)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = gray_thresh(gray, 101, 5)
+    outgoing_dlwtion(gray, line)
+    cv2.imshow('gray2', gray)
     th3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 3)
-    cv2.imshow("here",th3)
+    cv2.imshow("here", th3)
+
+
 
 if __name__ == "__main__":
     img_path = 'data/image5.jpg'
