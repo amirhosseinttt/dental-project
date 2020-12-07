@@ -94,8 +94,8 @@ def harris(img):
     return dst
 
 
-def canny(img):
-    canny = cv2.Canny(img, 100, 200)
+def canny(img, arg1=100, arg2=200):
+    canny = cv2.Canny(img, arg1, arg2)
     return canny
 
 
@@ -119,19 +119,34 @@ def arch_detection(img):
     plt.scatter(y, x)
     plt.plot(myline, mymodel(myline))
     plt.show()
-    return img
+    return myline
 
+
+def find_curve_line(img):
+    img = purify(img)
+    cv2.imshow("purified", img)
+    # cv2.imshow('arch detection', arch_detection(img))
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = gray_thresh(gray)
+    line = arch_detection(gray)
+    print(line)
+    cv2.imshow('gray', gray)
+    gray = np.float32(gray)
+    cv2.imshow('canny', canny(img))
+
+
+def second_method(img, line):
+    cv2.imshow("ffffff",img)
+    gray =  cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    th3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 3)
+    cv2.imshow("here",th3)
 
 if __name__ == "__main__":
     img_path = 'data/image5.jpg'
     img = cv2.imread(img_path)
-    img = purify(img)
-    cv2.imshow("original", img)
-    # cv2.imshow('arch detection', arch_detection(img))
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = gray_thresh(gray)
-    arch_detection(gray)
-    cv2.imshow('gray', gray)
-    gray = np.float32(gray)
-    cv2.imshow('canny', canny(img))
+    cv2.imshow("original mage", img)
+    line = find_curve_line(img)
+    img = cv2.imread(img_path)
+    second_method(img, line)
+    cv2.imshow("ttt", canny(img, 0, 200))
     cv2.waitKey(0)

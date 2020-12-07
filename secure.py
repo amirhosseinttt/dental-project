@@ -14,7 +14,6 @@ def circle_around(img):
     for i in circles[0, :]:
         # draw the outer circle
         cv2.circle(img, (i[0], i[1]), i[2], (255, 0, 0), 2)
-
         # draw the center of the circle
         cv2.circle(img, (i[0], i[1]), 2, (255, 0, 0), 3)
     return img
@@ -50,6 +49,24 @@ def mask(img):
     return img
 
 
+def gray_thresh(img):
+    th3 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 101, 60)
+    return th3
+
+
+def mask_alternative(img):
+    x = -1
+    for i in img:
+        x += 1
+        y = -1
+        for j in i:
+            y += 1
+            print(j)
+            if j[0] + j[1] + j[2] < 200:
+                img[x:y] = (0, 0, 0)
+    return img
+
+
 def paksh(img):
     kernel = np.ones((15, 15), np.uint8)
     opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
@@ -57,6 +74,8 @@ def paksh(img):
 
 
 def purify(img):
+    img = mask(img)
+    img = paksh(img)
     i = 0
     for pixel_row in img:
         j = 0
@@ -75,8 +94,8 @@ def harris(img):
     return dst
 
 
-def canny(img):
-    canny = cv2.Canny(img, 100, 200)
+def canny(img, arg1=100, arg2=200):
+    canny = cv2.Canny(img, arg1, arg2)
     return canny
 
 
@@ -96,21 +115,38 @@ def arch_detection(img):
     print(x)
     print(y)
     mymodel = (np.poly1d(np.polyfit(y, x, 3)))
-    myline = np.linspace(1, 1000, 100)
+    myline = np.linspace(0, len(img[1]), 100)
     plt.scatter(y, x)
     plt.plot(myline, mymodel(myline))
     plt.show()
-    return img
+    return myline
 
+
+def find_curve_line(img):
+    img = purify(img)
+    cv2.imshow("purified", img)
+    # cv2.imshow('arch detection', arch_detection(img))
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = gray_thresh(gray)
+    line = arch_detection(gray)
+    print(line)
+    cv2.imshow('gray', gray)
+    gray = np.float32(gray)
+    cv2.imshow('canny', canny(img))
+
+
+def second_method(img, line):
+    cv2.imshow("ffffff",img)
+    gray =  cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    th3 = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 21, 3)
+    cv2.imshow("here",th3)
 
 if __name__ == "__main__":
     img_path = 'data/image5.jpg'
     img = cv2.imread(img_path)
-    cv2.imshow("original", img)
-    # cv2.imshow('arch detection', arch_detection(img))
-    arch_detection(img)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imshow('ddd', gray)
-    gray = np.float32(gray)
-    cv2.imshow('canny', canny(img))
+    cv2.imshow("original mage", img)
+    line = find_curve_line(img)
+    img = cv2.imread(img_path)
+    second_method(img, line)
+    cv2.imshow("ttt", canny(img, 0, 200))
     cv2.waitKey(0)
